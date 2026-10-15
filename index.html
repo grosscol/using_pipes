@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Colin Gross">
-  <title>Demo Slides</title>
+  <title>Working with Pipes</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -100,59 +100,144 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="reveal.js/dist/theme/serif.css" id="theme">
+  <link rel="stylesheet" href="reveal.js/dist/theme/dracula.css" id="theme">
 </head>
 <body>
   <div class="reveal">
     <div class="slides">
 
 <section id="title-slide">
-  <h1 class="title">Demo Slides</h1>
+  <h1 class="title">Working with Pipes</h1>
   <p class="author">Colin Gross</p>
-  <p class="date">2026-10-12</p>
-</section>
-
-<section id="first-title" class="title-slide slide level1">
-<h1>First Title</h1>
-<p>Welcome to the first slide.</p>
-<p>2026-06-17</p>
-</section>
-
-<section id="second-title" class="title-slide slide level1">
-<h1>Second Title</h1>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae justo
-eget magna fermentum iaculis.</p>
+  <p class="date">2026-10-14</p>
 </section>
 
 <section>
-<section id="third-title" class="title-slide slide level1">
-<h1>Third Title</h1>
-<p>Tortor pretium viverra suspendisse potenti nullam ac tortor vitae.
-Nunc mattis enim ut tellus elementum sagittis vitae et.</p>
-</section>
-<section id="sub-1" class="slide level2">
-<h2>3 Sub 1</h2>
+<section id="pipes" class="title-slide slide level1">
+<h1>Pipes</h1>
+<ul>
+<li>One way interprocess communication</li>
+<li>First in, first out</li>
+<li>Backed my memory</li>
+</ul>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">puts</span> <span class="st">&quot;Hello World&quot;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>(<span class="dv">1</span><span class="kw">..</span><span class="dv">10</span>)<span class="at">.each</span><span class="kw">{</span> <span class="kw">|</span>n<span class="kw">|</span> <span class="fu">puts</span> n<span class="kw">+</span><span class="dv">10</span> <span class="kw">}</span></span></code></pre></div>
-<p>Enim nulla aliquet porttitor lacus luctus accumsan. Nulla
-pellentesque dignissim enim sit amet.</p>
+class="sourceCode txt"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>echo &quot;example&quot; | wc</span></code></pre></div>
 </section>
-<section id="sub-2" class="slide level2">
-<h2>3 Sub 2</h2>
-<p><del>Auctor neque vitae tempus quam pellentesque.</del></p>
-<h3
-id="scelerisque-viverra-mauris-in-aliquam-sem-fringilla.">Scelerisque
-viverra mauris in aliquam sem fringilla.</h3>
-<p>Donec pretium vulputate sapien nec sagittis aliquam malesuada
-bibendum.</p>
+<section id="named-pipes" class="slide level2">
+<h2>Named Pipes</h2>
+<ul>
+<li>Looks like a file</li>
+<li>Do not exist on disk</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>⮞ mkfifo pipe0</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>⮞ ls</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>. .. pipe0</span></code></pre></div>
+</section></section>
+<section>
+<section id="why" class="title-slide slide level1">
+<h1>Why</h1>
+<ul>
+<li>Fast</li>
+<li>Avoid clutter</li>
+</ul>
 </section>
-<section id="sub-3" class="slide level2">
-<h2>3 Sub 3</h2>
-<p><em>Massa id neque aliquam vestibulum morbi blandit cursus risus
-at.</em> <em>Vestibulum sed arcu non odio euismod.</em> <strong>Ut
-tellus elementum sagittis vitae et leo duis ut.</strong></p>
+<section id="ram-is-fast.-disk-is-slow." class="slide level2">
+<h2>RAM is fast. Disk is slow.</h2>
+<p><em>“The disk is molasses”</em></p>
+<p>is the new</p>
+<p><em>“The floor is lava”</em></p>
+</section>
+<section id="latency-speed" class="slide level2">
+<h2>Latency &amp; Speed</h2>
+<table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 47%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Read</th>
+<th><a
+href="https://people.eecs.berkeley.edu/~rcs/research/interactive_latency.html">Read
+Latency</a></th>
+<th><a
+href="https://www.eatyourbytes.com/ddr4-ram-data-transfers-speed-latency-and-voltage/">Throughput</a></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RAM</td>
+<td>3 μs</td>
+<td>35000 Mb/s</td>
+</tr>
+<tr class="even">
+<td>SSD</td>
+<td>825 μs</td>
+<td>500 Mb/s</td>
+</tr>
+</tbody>
+</table>
+<p>Disks have transfer time, controller overhead, queuing delay</p>
+</section></section>
+<section>
+<section id="file-clutter" class="title-slide slide level1">
+<h1>File Clutter</h1>
+<p>Processing data in chunks can leave many little files.</p>
+</section>
+<section id="quantity-of-chunks" class="slide level2">
+<h2>Quantity of Chunks</h2>
+<p>E.g. in <a
+href="https://github.com/statgen/bravo_data_prep/blob/sv_loc/workflows/coverage/templates/mlr_agg.sh">coverage
+aggregation</a></p>
+<ul>
+<li>500 samples</li>
+<li>23 chromosome files per sample</li>
+<li>50 - 250 chunks per file</li>
+</ul>
+<p>2,980,000 intermediate files</p>
+</section>
+<section id="intermediate-files" class="slide level2">
+<h2>Intermediate Files</h2>
+<p>Process depth files 1M bp at a time.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>NWD001.depth.gz NWD002.depth.gz NWD003.depth.gz</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>NWD001.depth.gz NWD002.depth.gz NWD003.depth.gz</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tabix NWD001.depth.gz &quot;chr1:1-1000000&quot; &gt; 1_1-1000000.tsv</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>tabix NWD002.depth.gz &quot;chr1:1-1000000&quot; &gt; 2_1-1000000.tsv</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>tabix NWD003.depth.gz &quot;chr1:1-1000000&quot; &gt; 3_1-1000000.tsv</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>aggregate.sh 1_1-1000000.tsv 2_1-1000000.tsv 3_1-1000000.tsv</span></code></pre></div>
+</section>
+<section id="named-pipe-instead-of-files" class="slide level2">
+<h2>Named Pipe Instead of Files</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mkfifo pipe1 pipe2 pipe3</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tabix NWD001.depth.gz &quot;chr1:1-100000&quot; &gt; pipe1 &amp;</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>tabix NWD002.depth.gz &quot;chr1:1-100000&quot; &gt; pipe2 &amp;</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>tabix NWD003.depth.gz &quot;chr1:1-100000&quot; &gt; pipe3 &amp;</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>aggregate.sh pipe1 pipe2 pipe3</span></code></pre></div>
+</section>
+<section id="current-use-in-bravo" class="slide level2">
+<h2>Current Use in BRAVO</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>PIPES=()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>PIPE_COUNT=0</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>for INFILE in ${INFILES[@]}</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>do</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  PIPE_NAME=pipe_${PIPE_COUNT}</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  mkfifo ${PIPE_NAME}</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  PIPES+=( ${PIPE_NAME} )</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  # Start reading depth file into pipe</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  (tabix ${INFILE} ${chromosome}:${POS}-${END} &gt; ${PIPE_NAME}) &amp;</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  let &quot;PIPE_COUNT = PIPE_COUNT + 1&quot;</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>done</span></code></pre></div>
 </section></section>
 <section id="fourth-title" class="title-slide slide level1">
 <h1>Fourth Title</h1>
