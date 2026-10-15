@@ -109,7 +109,7 @@
 <section id="title-slide">
   <h1 class="title">Working with Pipes</h1>
   <p class="author">Colin Gross</p>
-  <p class="date">2026-10-14</p>
+  <p class="date">2026-10-15</p>
 </section>
 
 <section>
@@ -121,18 +121,25 @@
 <li>Backed my memory</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode txt"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>echo &quot;example&quot; | wc</span></code></pre></div>
+class="sourceCode txt"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a># Piped data</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>echo &quot;example&quot; | wc</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a># Data written to intermediate file</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>echo &quot;example&quot; &gt; tmp.txt</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>wc tmp.txt</span></code></pre></div>
 </section>
 <section id="named-pipes" class="slide level2">
 <h2>Named Pipes</h2>
 <ul>
 <li>Looks like a file</li>
-<li>Do not exist on disk</li>
+<li>Do not touch disk</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode txt"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>⮞ mkfifo pipe0</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>⮞ ls</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>. .. pipe0</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>⮞ mkfifo pipe0</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>⮞ ls</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>. .. pipe0</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>samtools view pipe0</span></code></pre></div>
 </section></section>
 <section>
 <section id="why" class="title-slide slide level1">
@@ -194,99 +201,121 @@ aggregation</a></p>
 <ul>
 <li>500 samples</li>
 <li>23 chromosome files per sample</li>
-<li>50 - 250 chunks per file</li>
+<li>50 - 250 chunks per chromosome</li>
 </ul>
 <p>2,980,000 intermediate files</p>
 </section>
 <section id="intermediate-files" class="slide level2">
 <h2>Intermediate Files</h2>
 <p>Process depth files 1M bp at a time.</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode txt"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>NWD001.depth.gz NWD002.depth.gz NWD003.depth.gz</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode txt"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>NWD001.depth.gz NWD002.depth.gz NWD003.depth.gz</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>tabix NWD001.depth.gz &quot;chr1:1-1000000&quot; &gt; 1_1-1000000.tsv</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>tabix NWD002.depth.gz &quot;chr1:1-1000000&quot; &gt; 2_1-1000000.tsv</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>tabix NWD003.depth.gz &quot;chr1:1-1000000&quot; &gt; 3_1-1000000.tsv</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>aggregate.sh 1_1-1000000.tsv 2_1-1000000.tsv 3_1-1000000.tsv</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>NWD001.depth.gz NWD002.depth.gz NWD003.depth.gz</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tabix NWD001.depth.gz &quot;chr1:1-1000000&quot; &gt; 1_p1.tsv</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>tabix NWD002.depth.gz &quot;chr1:1-1000000&quot; &gt; 2_p1.tsv</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>tabix NWD003.depth.gz &quot;chr1:1-1000000&quot; &gt; 3_p1.tsv</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>aggregate.sh 1_p1.tsv 2_p1.tsv 3_p1.tsv</span></code></pre></div>
 </section>
 <section id="named-pipe-instead-of-files" class="slide level2">
 <h2>Named Pipe Instead of Files</h2>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode txt"><code class="sourceCode default"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mkfifo pipe1 pipe2 pipe3</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tabix NWD001.depth.gz &quot;chr1:1-100000&quot; &gt; pipe1 &amp;</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>tabix NWD002.depth.gz &quot;chr1:1-100000&quot; &gt; pipe2 &amp;</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>tabix NWD003.depth.gz &quot;chr1:1-100000&quot; &gt; pipe3 &amp;</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>aggregate.sh pipe1 pipe2 pipe3</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mkfifo pipe1 pipe2 pipe3</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>tabix NWD001.depth.gz &quot;chr1:1-100000&quot; &gt; pipe1 &amp;</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>tabix NWD002.depth.gz &quot;chr1:1-100000&quot; &gt; pipe2 &amp;</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>tabix NWD003.depth.gz &quot;chr1:1-100000&quot; &gt; pipe3 &amp;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>aggregate.sh pipe1 pipe2 pipe3</span></code></pre></div>
 </section>
-<section id="current-use-in-bravo" class="slide level2">
-<h2>Current Use in BRAVO</h2>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode txt"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>PIPES=()</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>PIPE_COUNT=0</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>for INFILE in ${INFILES[@]}</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>do</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  PIPE_NAME=pipe_${PIPE_COUNT}</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  mkfifo ${PIPE_NAME}</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  PIPES+=( ${PIPE_NAME} )</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  # Start reading depth file into pipe</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  (tabix ${INFILE} ${chromosome}:${POS}-${END} &gt; ${PIPE_NAME}) &amp;</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  let &quot;PIPE_COUNT = PIPE_COUNT + 1&quot;</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>done</span></code></pre></div>
+<section id="current-use-in-data-prep" class="slide level2">
+<h2>Current Use in Data Prep</h2>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>PIPES=()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>PIPE_COUNT=0</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>for INFILE in ${INFILES[@]}</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>do</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  PIPE_NAME=pipe_${PIPE_COUNT}</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  mkfifo ${PIPE_NAME}</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  PIPES+=( ${PIPE_NAME} )</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  # Start reading depth file into pipe</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  (tabix ${INFILE} ${CHROM}:${POS}-${END} &gt; ${PIPE_NAME}) &amp;</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  let &quot;PIPE_COUNT = PIPE_COUNT + 1&quot;</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>done</span></code></pre></div>
 </section></section>
-<section id="fourth-title" class="title-slide slide level1">
-<h1>Fourth Title</h1>
-<ul>
-<li>Duis at tellus at urna condimentum mattis pellentesque.</li>
-<li>Morbi leo urna molestie at elementum eu facilisis sed.</li>
-<li>Vel elit scelerisque mauris pellentesque pulvinar pellentesque.</li>
-</ul>
-</section>
-
-<section id="section" class="title-slide slide level1">
-<h1></h1>
-<ol type="1">
-<li>Pellentesque diam volutpat commodo sed egestas egestas fringilla
-phasellus faucibus.</li>
-<li>Curabitur vitae nunc sed velit dignissim sodales ut eu.</li>
-<li>Urna nec tincidunt praesent semper feugiat nibh sed.</li>
-</ol>
-</section>
-
-<section id="sixth-title" class="title-slide slide level1">
-<h1>Sixth Title</h1>
-<ul>
-<li>Suspendisse potenti nullam ac tortor vitae.</li>
-<li>Congue quisque egestas diam in arcu cursus euismod.</li>
-<li>Consectetur adipiscing elit duis tristique sollicitudin.</li>
-</ul>
-</section>
-
 <section>
-<section id="seventh-title" class="title-slide slide level1">
-<h1>Seventh Title</h1>
-<p>Image content</p>
-<p><img data-src="assets/top_perf.svg" /></p>
+<section id="nextflow-dustbusting" class="title-slide slide level1">
+<h1>Nextflow Dustbusting</h1>
+<p>Nextflow has clutter reducing options as well.</p>
+<ul>
+<li>scratch directory</li>
+<li>process outputs</li>
+</ul>
 </section>
-<section id="section-1" class="slide level2">
-<h2></h2>
-<figure>
-<img data-src="assets/top_perf.svg" width="250" alt="image title" />
-<figcaption aria-hidden="true">image title</figcaption>
-</figure>
+<section id="process-outputs" class="slide level2">
+<h2>Process Outputs</h2>
+<p>When a process is invoked, each process output is returned as a
+channel. Those channels can be different things:</p>
+<blockquote>
+<p>val: Emit the variable with the specified name. tuple: Emit multiple
+values. path: Emit a file produced by the process with the specified
+name.</p>
+</blockquote>
+</section>
+<section id="process-use" class="slide level2">
+<h2>Process Use</h2>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode txt"><code class="sourceCode default"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>process select_sample {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>   input:</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>   val(bcf_entry)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>   output:</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>   tuple val(sv_id), val(sample_id)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>   script:</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>   def sv_id = parse_sv_id( bcf_entry )</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>   def sample_id = select_samples( bcf_entry, 1)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>workflow {</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  sv_bcf = channel.fromPath(&#39;structvars.bcf&#39;)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>  bcf_entries = read_bcf( sv_bcf )</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  sv_singles = select_samples( bcf_entries )</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</section>
+<section id="scratch-space" class="slide level2">
+<h2>Scratch Space</h2>
+<blockquote>
+<p>The <code>scratch</code> directive executes each task in a temporary
+directory that is local to the compute node.</p>
+</blockquote>
+<p>This means only the input and output files are staged to the nextflow
+workspace. The intermediate files are cleaned up when the process
+completes.</p>
+</section>
+<section id="scratch-use" class="slide level2">
+<h2>Scratch Use</h2>
+<pre><code>process messy_chops {
+  scratch true
+
+  input:
+  path(bcf)
+  path(cram_dir)
+
+  output:
+  path(&quot;depths.tsv&quot;)
+
+  script:
+  &quot;&quot;&quot;
+    # Makes many intermediate files
+    #   before a final output depths.tsv
+  &quot;&quot;&quot;
+}</code></pre>
 </section></section>
-<section id="seventh-title-1" class="title-slide slide level1">
-<h1>Seventh Title</h1>
-<p>Incremental fragments</p>
-<p><span class="fragment"> stuff </span></p>
-<p><span class="fragment"> other </span></p>
-<p><span class="fragment"> stuff </span></p>
-</section>
     </div>
   </div>
 

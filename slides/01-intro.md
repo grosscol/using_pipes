@@ -9,7 +9,13 @@ title: Working with Pipes
 - Backed my memory
 
 ```txt
+# Piped data
 echo "example" | wc
+```
+```txt
+# Data written to intermediate file
+echo "example" > tmp.txt
+wc tmp.txt
 ```
 
 ## Named Pipes
@@ -20,6 +26,9 @@ echo "example" | wc
 ⮞ mkfifo pipe0
 ⮞ ls
 . .. pipe0
+```
+```txt
+samtools view pipe0
 ```
 
 # Why
